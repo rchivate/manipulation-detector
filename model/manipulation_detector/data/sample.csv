@@ -1,0 +1,49 @@
+text,label
+"I hear your concern and want to understand it better.",healthy
+"I disagree with your account but let's check the notes.",healthy
+"Could we take a break and discuss this calmly later?",healthy
+"I need some time to think before I answer.",healthy
+"Thank you for telling me how you feel.",healthy
+"I remember it differently; can we compare what happened?",healthy
+"We can set boundaries that work for both of us.",healthy
+"I made a mistake and I am sorry.",healthy
+"That never happened; you're imagining the whole conversation.",gaslighting
+"You're remembering it wrong again; I never said that.",gaslighting
+"Everyone knows your memory is unreliable.",gaslighting
+"You must be confused because I definitely did not do that.",gaslighting
+"Stop making things up; your recollection cannot be trusted.",gaslighting
+"You're too unstable to know what really happened.",gaslighting
+"I never promised that; you fabricated it in your head.",gaslighting
+"Your notes are wrong and you're imagining the meeting.",gaslighting
+"After everything I did for you, you owe me this favor.",guilt_tripping
+"If you cared about me, you would cancel your plans.",guilt_tripping
+"I sacrificed so much, and you won't even do this for me.",guilt_tripping
+"I guess my feelings do not matter if you refuse.",guilt_tripping
+"A grateful employee would volunteer for my weekend shift.",guilt_tripping
+"You should feel ashamed for saying no after all my help.",guilt_tripping
+"I helped you last month, so you have to agree now.",guilt_tripping
+"Only a selfish friend would deny me this request.",guilt_tripping
+"If you leave, I will make sure your friends turn against you.",emotional_blackmail
+"Agree with me or I will share your private messages.",emotional_blackmail
+"Do what I say or I will ruin your reputation at work.",emotional_blackmail
+"If you refuse, I will tell everyone your secret.",emotional_blackmail
+"Stay with me or I will punish you by cutting off contact.",emotional_blackmail
+"Support my decision or I will expose your personal information.",emotional_blackmail
+"Unless you comply, I will take away everything you value.",emotional_blackmail
+"If you do not sign, I will make your life miserable.",emotional_blackmail
+"Decide right now; I will not give you time to think.",emotional_pressure
+"Everyone agreed already, so you must say yes today.",emotional_pressure
+"Stop asking questions and commit immediately.",emotional_pressure
+"You have five minutes to accept my demand.",emotional_pressure
+"I need your answer this instant; do not consult anyone.",emotional_pressure
+"There is no time for discussion, just agree with me.",emotional_pressure
+"Keep working tonight or you will disappoint the whole team.",emotional_pressure
+"Do not pause to consider the details; approve it now.",emotional_pressure
+"My mistake is your fault because you annoyed me.",blame_shifting
+"I missed the deadline because you made me angry.",blame_shifting
+"I broke the agreement, but you forced me to do it.",blame_shifting
+"If you had behaved better, I would not have lied.",blame_shifting
+"The problem is really your reaction, not what I did.",blame_shifting
+"I yelled at you only because you provoked me.",blame_shifting
+"You are responsible for my decision to hide the facts.",blame_shifting
+"I failed to deliver, and that is entirely because of your attitude.",blame_shifting
