@@ -6,6 +6,15 @@ import type { ChangeEvent, DragEvent } from 'react';
 type CsvOverview = { rows: number; columns: number };
 type ModelStatus = 'checking' | 'connected' | 'disconnected';
 type AnalysisState = 'idle' | 'running' | 'complete' | 'error';
+type Prediction = {
+  row: number;
+  text: string;
+  label: string;
+  confidence: number;
+  expected_label?: string;
+  influential_phrases: { phrase: string; contribution: number }[];
+};
+type PredictionResults = { total: number; summary: Record<string, number>; predictions: Prediction[] };
 
 function countCsvRecords(contents: string): CsvOverview {
   let quoted = false;
@@ -48,6 +57,7 @@ export default function Home() {
   const [modelStatus, setModelStatus] = useState<ModelStatus>('checking');
   const [analysisState, setAnalysisState] = useState<AnalysisState>('idle');
   const [message, setMessage] = useState('');
+  const [results, setResults] = useState<PredictionResults | null>(null);
   const [isDragging, setIsDragging] = useState(false);
 
   useEffect(() => {
@@ -87,8 +97,8 @@ export default function Home() {
   }
 
   async function loadSample() {
-    const response = await fetch('/sample-conversations.csv');
-    const sample = new File([await response.blob()], 'sample-conversations.csv', { type: 'text/csv' });
+    const response = await fetch('/api/sample-data');
+    const sample = new File([await response.blob()], 'manipulation-sample.csv', { type: 'text/csv' });
     await selectFile(sample);
   }
 
@@ -96,6 +106,7 @@ export default function Home() {
     if (!file || modelStatus !== 'connected') return;
     setAnalysisState('running');
     setMessage('');
+    setResults(null);
     const formData = new FormData();
     formData.append('file', file);
 
@@ -114,9 +125,14 @@ export default function Home() {
           : responseText || 'The model service returned an error.';
         throw new Error(errorMessage);
       }
-      setMessage(typeof responseData === 'string' ? responseData : JSON.stringify(responseData, null, 2));
+      if (typeof responseData === 'object' && responseData !== null && 'predictions' in responseData) {
+        setResults(responseData as PredictionResults);
+      } else {
+        setMessage(typeof responseData === 'string' ? responseData : JSON.stringify(responseData, null, 2));
+      }
       setAnalysisState('complete');
     } catch (error) {
+      setResults(null);
       setMessage(error instanceof Error ? error.message : 'The analysis could not be completed.');
       setAnalysisState('error');
     }
@@ -205,7 +221,33 @@ export default function Home() {
               </button>
             </div>
 
-            {analysisState === 'complete' && (
+            {analysisState === 'complete' && results && (
+              <section className="result-panel" aria-live="polite">
+                <div className="result-heading"><span className="result-check">✓</span><h3>{results.total} conversations analyzed</h3></div>
+                <div className="result-summary">
+                  {Object.entries(results.summary).map(([label, count]) => (
+                    <span className="summary-chip" key={label}><strong>{count}</strong> {label.replaceAll('_', ' ')}</span>
+                  ))}
+                </div>
+                <div className="prediction-list">
+                  {results.predictions.map((prediction) => (
+                    <article className="prediction-row" key={prediction.row}>
+                      <div className="prediction-topline">
+                        <span className={`prediction-label prediction-label-${prediction.label}`}>{prediction.label.replaceAll('_', ' ')}</span>
+                        <span className="prediction-confidence">{Math.round(prediction.confidence * 100)}%</span>
+                      </div>
+                      <p>{prediction.text}</p>
+                      {prediction.expected_label && <span className="expected-label">Sample label: {prediction.expected_label.replaceAll('_', ' ')}</span>}
+                      {prediction.influential_phrases.length > 0 && (
+                        <div className="phrase-list">{prediction.influential_phrases.map(({ phrase }) => <span key={phrase}>{phrase}</span>)}</div>
+                      )}
+                    </article>
+                  ))}
+                </div>
+                <p className="result-disclaimer">Synthetic demonstration model. Predictions are language-pattern signals, not conclusions about intent.</p>
+              </section>
+            )}
+            {analysisState === 'complete' && !results && (
               <section className="result-panel" aria-live="polite">
                 <div className="result-heading"><span className="result-check">✓</span><h3>Analysis complete</h3></div>
                 <pre>{message}</pre>
@@ -214,11 +256,11 @@ export default function Home() {
           </div>
 
           <aside className="sample-column" aria-labelledby="sample-title">
-            <div className="section-heading"><div><h2 id="sample-title">Sample data</h2></div><span className="sample-count">2 RECORDS</span></div>
+            <div className="section-heading"><div><h2 id="sample-title">Sample data</h2></div><span className="sample-count">48 RECORDS</span></div>
             <div className="sample-file">
               <div className="sample-file-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 3.75h8l4 4v12.5H6zM14 4v4h4M9 12h6M9 15h6" /></svg></div>
-              <div className="sample-file-copy"><strong>Conversation examples</strong><span>Manipulation + neutral · CSV</span></div>
-              <a className="download-link" href="/sample-conversations.csv" download aria-label="Download sample conversations CSV" title="Download sample CSV">
+              <div className="sample-file-copy"><strong>Model training examples</strong><span>48 labeled rows · 6 patterns</span></div>
+              <a className="download-link" href="/api/sample-data" download aria-label="Download model sample CSV" title="Download sample CSV">
                 <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3v10m0 0 4-4m-4 4L6 9M4 15v2h12v-2" /></svg>
               </a>
             </div>
